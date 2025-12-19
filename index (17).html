@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chef Giovanni - Your Italian Culinary Master</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --warm-cream: #FDF8F3;
+            --rich-brown: #4A3728;
+            --copper: #B87333;
+            --tomato-red: #C41E3A;
+            --skin: #E8B89D;
+            --skin-shadow: #D4A088;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #FDF8F3 0%, #F5E6D3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Chef Avatar */
+        .chef-container {
+            position: relative;
+            width: 280px;
+            height: 320px;
+        }
+        
+        .chef-head {
+            position: absolute;
+            width: 180px;
+            height: 200px;
+            background: var(--skin);
+            border-radius: 50% 50% 45% 45%;
+            left: 50%;
+            top: 60px;
+            transform: translateX(-50%);
+            box-shadow: inset -10px -10px 30px var(--skin-shadow);
+        }
+        
+        .chef-hat {
+            position: absolute;
+            width: 160px;
+            height: 100px;
+            background: white;
+            border-radius: 50% 50% 10% 10%;
+            left: 50%;
+            top: 5px;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .chef-hat::before {
+            content: '';
+            position: absolute;
+            width: 180px;
+            height: 25px;
+            background: white;
+            border-radius: 10px;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .eyes {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 35px;
+        }
+        
+        .eye {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+            animation: blink 4s ease-in-out infinite;
+        }
+        
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #3D2314;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .eye::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            top: 8px;
+            left: 10px;
+            z-index: 1;
+        }
+        
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+        
+        .eyebrows {
+            position: absolute;
+            top: 105px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 45px;
+        }
+        
+        .eyebrow {
+            width: 32px;
+            height: 7px;
+            background: #5D4037;
+            border-radius: 10px;
+        }
+        
+        .eyebrow.left { transform: rotate(-10deg); }
+        .eyebrow.right { transform: rotate(10deg); }
+        
+        .nose {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 28px;
+            background: var(--skin-shadow);
+            border-radius: 50%;
+        }
+        
+        .mustache {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+        }
+        
+        .mustache-half {
+            width: 40px;
+            height: 18px;
+            background: #5D4037;
+            border-radius: 0 0 50% 50%;
+        }
+        
+        .mustache-half.left {
+            transform: rotate(10deg);
+            border-radius: 0 0 80% 20%;
+        }
+        
+        .mustache-half.right {
+            transform: rotate(-10deg);
+            border-radius: 0 0 20% 80%;
+        }
+        
+        .mouth-container {
+            position: absolute;
+            top: 205px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .mouth {
+            width: 45px;
+            height: 12px;
+            background: #8B0000;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            transition: height 0.08s ease;
+        }
+        
+        .mouth::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 8px;
+            background: #CC6666;
+            border-radius: 50%;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .speaking .mouth {
+            animation: talk 0.12s ease-in-out infinite alternate;
+        }
+        
+        @keyframes talk {
+            0% { height: 8px; border-radius: 0 0 25px 25px; }
+            33% { height: 20px; border-radius: 10px 10px 25px 25px; }
+            66% { height: 12px; border-radius: 5px 5px 20px 20px; }
+            100% { height: 22px; border-radius: 8px 8px 22px 22px; }
+        }
+        
+        .cheeks {
+            position: absolute;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 110px;
+        }
+        
+        .cheek {
+            width: 25px;
+            height: 12px;
+            background: rgba(255, 150, 150, 0.4);
+            border-radius: 50%;
+        }
+        
+        .speech-bubble {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            margin-top: 30px;
+        }
+        
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 12px solid transparent;
+            border-bottom-color: white;
+        }
+        
+        @keyframes recording-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(196, 30, 58, 0); }
+        }
+        
+        .recording {
+            animation: recording-pulse 1.5s ease-in-out infinite;
+            background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%) !important;
+        }
+        
+        .btn-mic {
+            background: linear-gradient(135deg, var(--tomato-red) 0%, #8B0000 100%);
+        }
+        
+        .btn-mic:hover {
+            background: linear-gradient(135deg, #D4374B 0%, var(--tomato-red) 100%);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .chef-container {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+        
+        @keyframes recording-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(196, 30, 58, 0); }
+        }
+        
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .speaking-ring {
+            animation: pulse-ring 1s ease-out infinite;
+        }
+        
+        .recording {
+            animation: recording-pulse 1.5s ease-in-out infinite;
+            background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%) !important;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .chat-container {
+            height: calc(100vh - 340px);
+            min-height: 300px;
+        }
+        
+        .message-bot {
+            background: linear-gradient(135deg, #4A3728 0%, #5D4637 100%);
+            color: white;
+        }
+        
+        .message-user {
+            background: linear-gradient(135deg, #87A878 0%, #6B8E5D 100%);
+            color: white;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #B87333;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--copper) 0%, #A66328 100%);
+        }
+        
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen p-4 pt-8">
+    
+    <!-- Header -->
+    <h1 class="font-['Playfair_Display'] text-3xl md:text-4xl font-bold text-[#4A3728] mb-1">
+        Chef Giovanni
+    </h1>
+    <p class="text-[#C41E3A] mb-4 italic">Your Italian Culinary Master</p>
+    
+    <!-- Chef Avatar -->
+    <div class="chef-container" id="chefAvatar">
+        <div class="chef-hat"></div>
+        <div class="chef-head"></div>
+        <div class="eyebrows">
+            <div class="eyebrow left"></div>
+            <div class="eyebrow right"></div>
+        </div>
+        <div class="eyes">
+            <div class="eye"></div>
+            <div class="eye"></div>
+        </div>
+        <div class="nose"></div>
+        <div class="cheeks">
+            <div class="cheek"></div>
+            <div class="cheek"></div>
+        </div>
+        <div class="mustache">
+            <div class="mustache-half left"></div>
+            <div class="mustache-half right"></div>
+        </div>
+        <div class="mouth-container">
+            <div class="mouth"></div>
+        </div>
+    </div>
+    
+    <!-- Speech Bubble -->
+    <div class="speech-bubble" id="speechBubble">
+        <p id="speechText" class="text-gray-700">Ciao! Ask me anything about cooking!</p>
+    </div>
+    
+    <!-- Quick Questions -->
+    <div class="flex flex-wrap justify-center gap-2 mt-6 max-w-md">
+        <button onclick="askQuestion('How do I make perfect pasta?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all shadow-sm">
+            🍝 Perfect pasta
+        </button>
+        <button onclick="askQuestion('What sauce for chicken?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all shadow-sm">
+            🍗 Chicken sauce
+        </button>
+        <button onclick="askQuestion('Quick dinner idea?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all shadow-sm">
+            ⏱️ Quick dinner
+        </button>
+        <button onclick="askQuestion('How to make risotto?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all shadow-sm">
+            🍚 Risotto
+        </button>
+    </div>
+    
+    <!-- Input Area -->
+    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-xl">
+        <button 
+            onclick="toggleRecording()" 
+            id="micBtn"
+            class="btn-mic text-white w-12 h-12 rounded-full font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-xl"
+            title="Click to speak"
+        >
+            <span id="micIcon">🎤</span>
+        </button>
+        <input 
+            type="text" 
+            id="userInput" 
+            placeholder="Ask Chef Giovanni..."
+            class="w-56 md:w-72 bg-gray-100 border-2 border-gray-200 rounded-xl px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#B87333] transition-all"
+        >
+        <button 
+            onclick="sendMessage()" 
+            id="sendBtn"
+            class="bg-[#4A3728] hover:bg-[#5D4637] text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+        >
+            Send
+        </button>
+    </div>
+    
+    <p id="recordingStatus" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 text-sm text-[#C41E3A] font-medium hidden">🎤 Listening... speak now!</p>
+    
+    <!-- Voice Toggle -->
+    <button onclick="toggleVoice()" id="voiceToggle" class="fixed top-4 right-4 bg-white p-3 rounded-full shadow-lg text-xl hover:scale-110 transition-transform" title="Toggle voice">
+        🔊
+    </button>
+
+    <script>
+        const chefAvatar = document.getElementById('chefAvatar');
+        const speechBubble = document.getElementById('speechBubble');
+        const speechText = document.getElementById('speechText');
+        const userInput = document.getElementById('userInput');
+        const micBtn = document.getElementById('micBtn');
+        
+        let voiceEnabled = true;
+        let currentAudio = null;
+        let isRecording = false;
+        let recognition = null;
+
+        // Setup speech recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                stopRecording();
+                sendMessage();
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                stopRecording();
+            };
+            
+            recognition.onend = () => {
+                stopRecording();
+            };
+        }
+
+        function toggleRecording() {
+            if (!recognition) {
+                alert('Speech recognition not supported. Try Chrome!');
+                return;
+            }
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        function startRecording() {
+            isRecording = true;
+            micBtn.classList.add('recording');
+            document.getElementById('micIcon').textContent = '⏹️';
+            document.getElementById('recordingStatus').classList.remove('hidden');
+            recognition.start();
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            micBtn.classList.remove('recording');
+            document.getElementById('micIcon').textContent = '🎤';
+            document.getElementById('recordingStatus').classList.add('hidden');
+            try { recognition.stop(); } catch (e) {}
+        }
+
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            document.getElementById('voiceToggle').textContent = voiceEnabled ? '🔊' : '🔇';
+            if (!voiceEnabled && currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                setSpeaking(false);
+            }
+        }
+
+        function setSpeaking(speaking) {
+            if (speaking) {
+                chefAvatar.classList.add('speaking');
+            } else {
+                chefAvatar.classList.remove('speaking');
+            }
+        }
+
+        async function speakText(text) {
+            if (!voiceEnabled) return;
+            
+            try {
+                setSpeaking(true);
+                
+                const response = await fetch('/api/voice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, voiceId: 'ErXwobaYiN019PkySvjV' })
+                });
+
+                if (!response.ok) {
+                    setSpeaking(false);
+                    return;
+                }
+
+                const data = await response.json();
+                if (!data.audio) {
+                    setSpeaking(false);
+                    return;
+                }
+                
+                const binaryString = atob(data.audio);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                currentAudio = new Audio(audioUrl);
+                currentAudio.onended = () => {
+                    setSpeaking(false);
+                    currentAudio = null;
+                };
+                currentAudio.onerror = () => {
+                    setSpeaking(false);
+                    currentAudio = null;
+                };
+                
+                await currentAudio.play();
+                
+            } catch (error) {
+                console.error('Voice error:', error);
+                setSpeaking(false);
+            }
+        }
+
+        async function getCulinaryResponse(message) {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                if (!response.ok) throw new Error('API error');
+                const data = await response.json();
+                return data.response;
+            } catch (error) {
+                return "Mamma mia! Something went wrong. Try again!";
+            }
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            userInput.value = '';
+            speechText.textContent = "Hmm, let me think...";
+
+            const response = await getCulinaryResponse(message);
+            speechText.textContent = response;
+            speakText(response);
+        }
+
+        function askQuestion(question) {
+            userInput.value = question;
+            sendMessage();
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
