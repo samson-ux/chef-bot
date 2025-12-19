@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chef Claude - Your Culinary Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --warm-cream: #FDF8F3;
+            --rich-brown: #4A3728;
+            --copper: #B87333;
+            --sage: #87A878;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-body { font-family: 'DM Sans', sans-serif; }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--warm-cream);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B87333' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        
+        @keyframes steam {
+            0% { opacity: 0; transform: translateY(0) scale(1); }
+            50% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-30px) scale(1.5); }
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+        
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .steam {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: steam 2s ease-out infinite;
+        }
+        
+        .steam:nth-child(2) { left: 30%; animation-delay: 0.4s; }
+        .steam:nth-child(3) { left: 60%; animation-delay: 0.8s; }
+        
+        .speaking-ring {
+            animation: pulse-ring 1s ease-out infinite;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .chat-container {
+            height: calc(100vh - 340px);
+            min-height: 300px;
+        }
+        
+        .message-bot {
+            background: linear-gradient(135deg, #4A3728 0%, #5D4637 100%);
+            color: white;
+        }
+        
+        .message-user {
+            background: linear-gradient(135deg, #87A878 0%, #6B8E5D 100%);
+            color: white;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #B87333;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--copper) 0%, #A66328 100%);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #C98340 0%, var(--copper) 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <div class="relative inline-block">
+                <div class="text-7xl float-animation">👨‍🍳</div>
+                <!-- Steam effects -->
+                <div class="absolute -top-4 left-1/4">
+                    <div class="steam"></div>
+                    <div class="steam"></div>
+                    <div class="steam"></div>
+                </div>
+            </div>
+            <h1 class="font-display text-4xl md:text-5xl font-bold mt-4 text-[#4A3728]">
+                Chef Claude
+            </h1>
+            <p class="text-[#B87333] mt-2 font-medium">Your Personal Culinary Assistant</p>
+        </header>
+
+        <!-- Voice Status -->
+        <div class="flex justify-center mb-4">
+            <div id="voiceStatus" class="glass-card rounded-full px-4 py-2 flex items-center gap-3">
+                <div class="relative">
+                    <div id="speakingIndicator" class="hidden">
+                        <div class="absolute inset-0 bg-green-400 rounded-full speaking-ring"></div>
+                    </div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full relative z-10"></div>
+                </div>
+                <span class="text-sm text-gray-600">Voice Enabled</span>
+                <button onclick="toggleVoice()" id="voiceToggle" class="text-lg hover:scale-110 transition-transform" title="Toggle voice">
+                    🔊
+                </button>
+                <select id="voiceSelect" class="text-sm bg-transparent border-none focus:outline-none text-gray-600 cursor-pointer">
+                    <option value="ErXwobaYiN019PkySvjV">Antoni (Male)</option>
+                    <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Female)</option>
+                    <option value="EXAVITQu4vr4xnSDxMaL">Bella (Female)</option>
+                    <option value="TxGEqnHWrfWFTfGW9XjX">Josh (Male)</option>
+                    <option value="pNInz6obpgDQGcFmaJgB">Adam (Male)</option>
+                    <option value="yoZ06aMxZJJ28mfd3POQ">Sam (Male)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="glass-card rounded-3xl overflow-hidden shadow-xl">
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="chat-container overflow-y-auto p-5 space-y-4">
+                <!-- Welcome message -->
+                <div class="flex items-start gap-3">
+                    <div class="text-3xl">👨‍🍳</div>
+                    <div class="message-bot rounded-2xl rounded-tl-none px-4 py-3 max-w-[80%] shadow-md">
+                        <p>Bonjour! I'm Chef Claude, your personal culinary assistant. Ask me anything about cooking - recipes, techniques, ingredient substitutions, meal planning, or food pairings. What shall we cook today? 🍳</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="px-5 py-3 border-t border-gray-200 bg-white/50">
+                <p class="text-xs text-gray-500 mb-2">Quick questions:</p>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="askQuestion('What can I make with chicken and rice?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all">
+                        🍗 Chicken & rice recipes
+                    </button>
+                    <button onclick="askQuestion('How do I make a perfect omelette?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all">
+                        🥚 Perfect omelette
+                    </button>
+                    <button onclick="askQuestion('What spices go well with salmon?')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all">
+                        🐟 Salmon spices
+                    </button>
+                    <button onclick="askQuestion('Give me a quick 15-minute dinner idea')" class="text-xs bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 transition-all">
+                        ⏱️ Quick dinner
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-4 bg-white/70">
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        id="userInput" 
+                        placeholder="Ask me about recipes, techniques, ingredients..."
+                        class="flex-1 bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#B87333] transition-all"
+                    >
+                    <button 
+                        onclick="sendMessage()" 
+                        id="sendBtn"
+                        class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                    >
+                        <span>Send</span>
+                        <span>🍴</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-6 text-sm text-gray-500">
+            <p>🍳 Powered by Claude AI & ElevenLabs Voice 🎙️</p>
+        </footer>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        let voiceEnabled = true;
+        let currentAudio = null;
+
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            document.getElementById('voiceToggle').textContent = voiceEnabled ? '🔊' : '🔇';
+            
+            if (!voiceEnabled && currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                setSpeaking(false);
+            }
+        }
+
+        function setSpeaking(speaking) {
+            const indicator = document.getElementById('speakingIndicator');
+            if (speaking) {
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+        }
+
+        function addMessage(content, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
+            
+            const emoji = isUser ? '👤' : '👨‍🍳';
+            const messageClass = isUser ? 'message-user rounded-tr-none' : 'message-bot rounded-tl-none';
+            
+            messageDiv.innerHTML = `
+                <div class="text-3xl">${emoji}</div>
+                <div class="${messageClass} rounded-2xl px-4 py-3 max-w-[80%] shadow-md">
+                    <p>${content}</p>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'flex items-start gap-3';
+            typingDiv.innerHTML = `
+                <div class="text-3xl">👨‍🍳</div>
+                <div class="message-bot rounded-2xl rounded-tl-none px-4 py-3">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        async function speakText(text) {
+            if (!voiceEnabled) return;
+            
+            const voiceId = document.getElementById('voiceSelect').value;
+            
+            try {
+                setSpeaking(true);
+                console.log('Requesting voice for text:', text.substring(0, 50) + '...');
+                
+                const response = await fetch('/api/voice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, voiceId })
+                });
+
+                console.log('Voice API response status:', response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Voice API error:', errorData);
+                    setSpeaking(false);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('Got audio data, length:', data.audio?.length);
+                
+                if (!data.audio) {
+                    console.error('No audio data received');
+                    setSpeaking(false);
+                    return;
+                }
+                
+                // Convert base64 to audio
+                const binaryString = atob(data.audio);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                console.log('Playing audio...');
+                currentAudio = new Audio(audioUrl);
+                
+                currentAudio.onended = () => {
+                    console.log('Audio finished');
+                    setSpeaking(false);
+                    currentAudio = null;
+                };
+                currentAudio.onerror = (e) => {
+                    console.error('Audio playback error:', e);
+                    setSpeaking(false);
+                    currentAudio = null;
+                };
+                
+                await currentAudio.play();
+                
+            } catch (error) {
+                console.error('Voice error:', error);
+                setSpeaking(false);
+            }
+        }
+
+        async function getCulinaryResponse(message) {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API error');
+                }
+
+                const data = await response.json();
+                return data.response;
+
+            } catch (error) {
+                console.error('Error:', error);
+                return "Oops! Something went wrong in the kitchen. Please try again!";
+            }
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            userInput.value = '';
+            
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            showTyping();
+
+            try {
+                const response = await getCulinaryResponse(message);
+                removeTyping();
+                addMessage(response, false);
+                
+                // Speak the response
+                speakText(response);
+                
+            } catch (error) {
+                removeTyping();
+                addMessage("Sorry, I'm having trouble right now. Please try again!", false);
+            }
+
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        function askQuestion(question) {
+            userInput.value = question;
+            sendMessage();
+        }
+
+        // Enter key to send
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Focus input on load
+        userInput.focus();
+    </script>
+</body>
+</html>
